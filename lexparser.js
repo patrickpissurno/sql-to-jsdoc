@@ -67,17 +67,21 @@ function parser(tokens){
     if(tokens.length < 1)
         throw new Error('Invalid query');
 
-    const expression = { type: null };
+    const expression = { type: null, ctes: [] };
 
     // find expression type
     let main_query_start = 0;
     if(tokens[0] === 'WITH'){
+        expression.ctes.push({ alias: null, expression: null });
+
+        let cte_query_start = null;
         let open_parenthesis = 0;
         let expected = 'alias';
         let end = null;
         for(let i = 1; i < tokens.length && end == null; i++){
             switch(expected){
                 case 'alias':
+                    expression.ctes[expression.ctes.length - 1].alias = tokens[i];
                     expected = 'AS';
                     continue;
                 case 'AS':
@@ -89,6 +93,7 @@ function parser(tokens){
                     if(tokens[i] !== '(')
                         throw new Error(`Unexpected token '${tokens[i]}'. Expecting: '${expected}'.`);
                     open_parenthesis = 1;
+                    cte_query_start = i + 1;
                     expected = ')';
                     continue;
                 case ')':
@@ -97,11 +102,15 @@ function parser(tokens){
                     else if(tokens[i] === ')')
                         open_parenthesis -= 1;
 
-                    if(open_parenthesis === 0)
+                    if(open_parenthesis === 0){
+                        expression.ctes[expression.ctes.length - 1].expression = parseSelect(tokens, cte_query_start, i);
                         expected = ',';
+                    }
                     continue;
                 case ',':
                     if(tokens[i] === ','){
+                        cte_query_start = null;
+                        expression.ctes.push({ alias: null, expression: null });
                         expected = 'alias';
                         continue;
                     }
