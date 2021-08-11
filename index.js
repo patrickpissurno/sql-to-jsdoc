@@ -9,22 +9,23 @@ types.setTypeParser(1003, v => {
     return v.length === 1 && v[0] === null ? null : v;
 });
 
-const pg = new Client({
-    host: config.DB_HOST,
-    database: config.DB_NAME,
-    user: config.DB_USER,
-    password: config.DB_PASS,
-    port: config.DB_PORT,
-});
+// const pg = new Client({
+//     host: config.DB_HOST,
+//     database: config.DB_NAME,
+//     user: config.DB_USER,
+//     password: config.DB_PASS,
+//     port: config.DB_PORT,
+// });
 
-main();
+//main();
+
+const query = fs.readFileSync('./query.sql').toString();
+lexparser(query);
 
 async function main(){
     await pg.connect();
     try {
         const query = fs.readFileSync('./query.sql').toString();
-        lexparser(query);
-        return; //FIXME:
 
         {
             try {
