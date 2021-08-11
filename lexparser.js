@@ -25,12 +25,19 @@ function lexer(sql){
                 case ' ':
                 case '\n':
                 case ',':
+                case '(':
+                case ')':
                 case undefined:
                     const token = sql.substring(startIndex, i);
                     if(token.trim())
                         tokens.push(token);
 
                     startIndex = i;
+
+                    if(sql[i] != null && sql[i] !== ' ' && sql[i] !== '\n'){
+                        tokens.push(sql[i]);
+                        startIndex += 1;
+                    }
                     break;
                 case '\'':
                     inside_string = '\'';
