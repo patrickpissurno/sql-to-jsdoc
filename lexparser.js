@@ -113,10 +113,104 @@ function parser(tokens){
             break;
     }
 
-    if(expression.type == null)
-        throw new Error('Unsuported expression type');
-
-    //TODO: continue
+    switch(expression.type){
+        case 'SELECT':
+            Object.assign(expression, parseSelect(tokens, main_query_start));
+            break;
+        default:
+            throw new Error('Unsuported expression type');
+    }
     
     return expression;
+}
+
+// https://www.postgresql.org/docs/current/sql-select.html
+const POSSIBLE_KEYWORDS_IMMEDIATELY_AFTER_SELECT = new Set([
+    'ALL',
+    'DISTINCT',
+]);
+
+// https://www.postgresql.org/docs/current/sql-select.html
+const POSSIBLE_KEYWORDS_AFTER_FROM_TABLE_NAME = new Set([
+    'WHERE',
+    'GROUP',
+    'HAVING',
+    'WINDOW',
+    'UNION',
+    'INTERSECT',
+    'EXCEPT',
+    'ORDER',
+    'LIMIT',
+    'OFFSET',
+    'FETCH',
+    'FOR'
+]);
+
+/**
+ * @param {string[]} tokens
+ * @param {number} query_start
+*/
+function parseSelect(tokens, query_start){
+    let columns = [];
+    let from = [];
+    
+    let startIndex = query_start + 1;
+    let immediately_after_select = true;
+    for(let i = startIndex; i < tokens.length; i++){
+        if(immediately_after_select){
+            if(!POSSIBLE_KEYWORDS_IMMEDIATELY_AFTER_SELECT.has(tokens[i])){
+                immediately_after_select = false;
+                startIndex = i;
+                i -= 1;
+            }
+        }
+        else if(tokens[i] === ',' || tokens[i] === 'FROM'){
+            const col = [];
+            for(let j = startIndex; j < i; j++)
+                col.push(tokens[j]);
+            columns.push(col);
+            startIndex = i + 1;
+
+            if(tokens[i] === 'FROM')
+                break;
+        }
+    }
+
+    let expected = 'table';
+    let end = null;
+    for(let i = startIndex; i < tokens.length; i++){
+        switch(expected){
+            case 'table':
+                from.push([ tokens[i] ]);
+                expected = 'alias';
+                continue;
+            case 'alias':
+                if(POSSIBLE_KEYWORDS_AFTER_FROM_TABLE_NAME.has(tokens[i])){
+                    end = i;
+                    break;
+                }
+                else if(tokens[i] === ','){
+                    expected = ',';
+                    i -= 1;
+                    continue;
+                }
+                else {
+                    from[from.length - 1].push(tokens[i]);
+                    expected = ',';
+                    continue;
+                }
+            case ',':
+                if(tokens[i] === ','){
+                    expected = 'table';
+                    continue;
+                }
+                else
+                    end = i;
+                break;
+        }
+        if(end != null)
+            break;
+    }
+
+    return { type: 'SELECT', columns, from };
 }
