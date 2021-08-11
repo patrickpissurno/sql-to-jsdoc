@@ -1,0 +1,19 @@
+{
+  "name": "sql-query-mapper",
+  "version": "1.0.0",
+  "main": "index.js",
+  "private": true,
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/patrickpissurno/sql-query-mapper.git"
+  },
+  "author": "Patrick Pissurno",
+  "bugs": {
+    "url": "https://github.com/patrickpissurno/sql-query-mapper/issues"
+  },
+  "homepage": "https://github.com/patrickpissurno/sql-query-mapper#readme",
+  "dependencies": {
+    "pg": "^8.7.1"
+  }
+}

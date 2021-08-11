@@ -74,3 +74,8 @@ typings/
 
 # FuseBox cache
 .fusebox/
+
+env_vars
+output/
+
+query.sql
