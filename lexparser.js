@@ -137,6 +137,17 @@ const POSSIBLE_KEYWORDS_IMMEDIATELY_AFTER_SELECT = new Set([
     'DISTINCT',
 ]);
 
+//https://www.postgresql.org/docs/current/queries-table-expressions.html
+const POSSIBLE_KEYWORDS_JOIN_MODIFIERS = new Set([
+    'CROSS',
+    'INNER',
+    'LEFT',
+    'RIGHT',
+    'FULL',
+    'OUTER',
+    'NATURAL',
+]);
+
 // https://www.postgresql.org/docs/current/sql-select.html
 const POSSIBLE_KEYWORDS_AFTER_FROM_TABLE_NAME = new Set([
     'WHERE',
@@ -152,14 +163,7 @@ const POSSIBLE_KEYWORDS_AFTER_FROM_TABLE_NAME = new Set([
     'FETCH',
     'FOR',
 
-    //https://www.postgresql.org/docs/current/queries-table-expressions.html
-    'CROSS',
-    'INNER',
-    'LEFT',
-    'RIGHT',
-    'FULL',
-    'OUTER',
-    'NATURAL',
+    ...POSSIBLE_KEYWORDS_JOIN_MODIFIERS,
     'JOIN',
 ]);
 
@@ -235,8 +239,50 @@ function parseSelect(tokens, query_start){
 
     startIndex = end == null ? tokens.length : end;
 
+    // find first join
+    let found_join = false;
     for(let i = startIndex; i < tokens.length; i++){
-        console.log(tokens[i]);
+        if(tokens[i] == 'JOIN'){
+            startIndex = i;
+            found_join = true;
+            break;
+        }
+    }
+
+    //find join starting token
+    if(found_join){
+        for(let i = startIndex - 1; i >= end; i--){
+            if(POSSIBLE_KEYWORDS_JOIN_MODIFIERS.has(tokens[i]))
+                startIndex = i;
+            else
+                break;
+        }
+
+        joins.push({ modifiers: [], table: [] });
+
+        let expected = 'modifier';
+        for(let i = startIndex; i < tokens.length; i++){
+            if(expected === 'modifier'){
+                if(tokens[i] === 'JOIN')
+                    expected = 'table';
+                else if(POSSIBLE_KEYWORDS_JOIN_MODIFIERS.has(tokens[i]))
+                    joins[joins.length - 1].modifiers.push(tokens[i]);
+                else
+                    throw new Error(`Unexpected token '${tokens[i]}'. Expecting: ${[...POSSIBLE_KEYWORDS_JOIN_MODIFIERS, 'JOIN'].map(x => `'${x}'`).join(', ')}.`);
+            }
+            else {
+                switch(expected){
+                    case 'table':
+                        if(tokens[i] === 'AS')
+                            continue;
+                        else if(tokens[i] === 'ON')
+                            expected = 'condition';
+                        else
+                            joins[joins.length - 1].table.push(tokens[i]);
+                        continue;
+                }
+            }
+        }
     }
 
     return { type: 'SELECT', columns, from, joins };
