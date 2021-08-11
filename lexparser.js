@@ -258,7 +258,7 @@ function parseSelect(tokens, query_start){
                 break;
         }
 
-        joins.push({ modifiers: [], table: [] });
+        joins.push({ modifiers: [], table: [], condition: [] });
 
         let expected = 'modifier';
         for(let i = startIndex; i < tokens.length; i++){
@@ -279,6 +279,21 @@ function parseSelect(tokens, query_start){
                             expected = 'condition';
                         else
                             joins[joins.length - 1].table.push(tokens[i]);
+                        continue;
+                    case 'condition':
+                        if(tokens[i] === 'JOIN' || POSSIBLE_KEYWORDS_JOIN_MODIFIERS.has(tokens[i])){
+                            joins.push({ modifiers: [], table: [], condition: [] });
+                            expected = 'modifier';
+                            i -= 1;
+                            continue;
+                        }
+                        else if(POSSIBLE_KEYWORDS_AFTER_FROM_TABLE_NAME.has(tokens[i])){
+                            startIndex = i;
+                            i = tokens.length; //halt the for
+                            continue;
+                        }
+                        else
+                            joins[joins.length - 1].condition.push(tokens[i]);
                         continue;
                 }
             }
