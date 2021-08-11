@@ -123,7 +123,7 @@ function parser(tokens){
 
     switch(expression.type){
         case 'SELECT':
-            Object.assign(expression, parseSelect(tokens, main_query_start));
+            Object.assign(expression, parseSelect(tokens, main_query_start, tokens.length));
             break;
         default:
             throw new Error('Unsuported expression type');
@@ -171,15 +171,16 @@ const POSSIBLE_KEYWORDS_AFTER_FROM_TABLE_NAME = new Set([
 /**
  * @param {string[]} tokens
  * @param {number} query_start
+ * @param {number} query_end
 */
-function parseSelect(tokens, query_start){
+function parseSelect(tokens, query_start, query_end){
     let columns = [];
     let from = [];
     let joins = [];
     
     let startIndex = query_start + 1;
     let immediately_after_select = true;
-    for(let i = startIndex; i < tokens.length; i++){
+    for(let i = startIndex; i < query_end; i++){
         if(immediately_after_select){
             if(!POSSIBLE_KEYWORDS_IMMEDIATELY_AFTER_SELECT.has(tokens[i])){
                 immediately_after_select = false;
@@ -201,7 +202,7 @@ function parseSelect(tokens, query_start){
 
     let expected = 'table';
     let end = null;
-    for(let i = startIndex; i < tokens.length; i++){
+    for(let i = startIndex; i < query_end; i++){
         switch(expected){
             case 'table':
                 from.push([ tokens[i] ]);
@@ -238,11 +239,11 @@ function parseSelect(tokens, query_start){
             break;
     }
 
-    startIndex = end == null ? tokens.length : end;
+    startIndex = end == null ? query_end : end;
 
     // find first join
     let found_join = false;
-    for(let i = startIndex; i < tokens.length; i++){
+    for(let i = startIndex; i < query_end; i++){
         if(tokens[i] == 'JOIN'){
             startIndex = i;
             found_join = true;
@@ -262,7 +263,7 @@ function parseSelect(tokens, query_start){
         joins.push({ modifiers: [], table: [], condition: [] });
 
         let expected = 'modifier';
-        for(let i = startIndex; i < tokens.length; i++){
+        for(let i = startIndex; i < query_end; i++){
             if(expected === 'modifier'){
                 if(tokens[i] === 'JOIN')
                     expected = 'table';
@@ -290,7 +291,7 @@ function parseSelect(tokens, query_start){
                         }
                         else if(POSSIBLE_KEYWORDS_AFTER_FROM_TABLE_NAME.has(tokens[i])){
                             startIndex = i;
-                            i = tokens.length; //halt the for
+                            i = query_end; //halt the for
                             continue;
                         }
                         else
