@@ -7,6 +7,7 @@ module.exports = function lexparser(sql){
     console.log(tokens);
     const parsed = parser(tokens);
     console.log(parsed);
+    return parsed;
 }
 
 /** @param {string} sql */
