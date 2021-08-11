@@ -143,7 +143,17 @@ const POSSIBLE_KEYWORDS_AFTER_FROM_TABLE_NAME = new Set([
     'LIMIT',
     'OFFSET',
     'FETCH',
-    'FOR'
+    'FOR',
+
+    //https://www.postgresql.org/docs/current/queries-table-expressions.html
+    'CROSS',
+    'INNER',
+    'LEFT',
+    'RIGHT',
+    'FULL',
+    'OUTER',
+    'NATURAL',
+    'JOIN',
 ]);
 
 /**
@@ -153,6 +163,7 @@ const POSSIBLE_KEYWORDS_AFTER_FROM_TABLE_NAME = new Set([
 function parseSelect(tokens, query_start){
     let columns = [];
     let from = [];
+    let joins = [];
     
     let startIndex = query_start + 1;
     let immediately_after_select = true;
@@ -194,6 +205,9 @@ function parseSelect(tokens, query_start){
                     i -= 1;
                     continue;
                 }
+                else if(tokens[i] === 'AS'){
+                    continue;
+                }
                 else {
                     from[from.length - 1].push(tokens[i]);
                     expected = ',';
@@ -212,5 +226,11 @@ function parseSelect(tokens, query_start){
             break;
     }
 
-    return { type: 'SELECT', columns, from };
+    startIndex = end == null ? tokens.length : end;
+
+    for(let i = startIndex; i < tokens.length; i++){
+        console.log(tokens[i]);
+    }
+
+    return { type: 'SELECT', columns, from, joins };
 }
