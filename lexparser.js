@@ -2,7 +2,7 @@
  * @typedef Join
  * @property {string[]} modifiers
  * @property {string[]} table
- * @property {string[]} conditions
+ * @property {string[]} condition
  */
 
 /**
