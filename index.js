@@ -35,27 +35,27 @@ async function main(){
 
         return;
 
-        const query = fs.readFileSync('./query.sql').toString();
+        // const query = fs.readFileSync('./query.sql').toString();
 
-        {
-            try {
-                const tmp_table = 'tmp_query1';
-                await pg.query('BEGIN');
-                await pg.query(`CREATE TEMP TABLE ${tmp_table} AS (${query})`);
+        // {
+        //     try {
+        //         const tmp_table = 'tmp_query1';
+        //         await pg.query('BEGIN');
+        //         await pg.query(`CREATE TEMP TABLE ${tmp_table} AS (${query})`);
 
-                const { rows } = await pg.query(`
-                    SELECT attrelid::regclass AS table_name, attname AS column_name, atttypid::regtype AS column_type
-                    FROM   pg_attribute
-                    WHERE  attrelid = '${tmp_table}'::regclass AND attnum > 0 AND NOT attisdropped
-                    ORDER  BY attnum
-                `);
+        //         const { rows } = await pg.query(`
+        //             SELECT attrelid::regclass AS table_name, attname AS column_name, atttypid::regtype AS column_type
+        //             FROM   pg_attribute
+        //             WHERE  attrelid = '${tmp_table}'::regclass AND attnum > 0 AND NOT attisdropped
+        //             ORDER  BY attnum
+        //         `);
 
-                console.log(rows);
-            }
-            finally {
-                await pg.query('ROLLBACK');
-            }
-        }
+        //         console.log(rows);
+        //     }
+        //     finally {
+        //         await pg.query('ROLLBACK');
+        //     }
+        // }
 
         // let tables;
         // let tables_index = new Map();
