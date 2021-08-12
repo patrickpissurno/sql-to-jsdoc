@@ -1,6 +1,38 @@
 /**
+ * @typedef Join
+ * @property {string[]} modifiers
+ * @property {string[]} table
+ * @property {string[]} conditions
+ */
+
+/**
+ * @typedef _ParsedSelectExpression
+ * @property {string} type
+ * @property {string[][]} columns
+ * @property {string[][]} from
+ * @property {Join[]} joins
+ */
+
+/**
+ * @typedef CommonTableExpression
+ * @property {string} alias
+ * @property {_ParsedSelectExpression} expression
+ */
+
+/**
+ * @typedef ParsedExpression
+ * @property {string} type
+ * @property {CommonTableExpression[]} ctes
+ */
+
+/**
+ * @typedef {ParsedExpression & _ParsedSelectExpression} ParsedSelectExpression
+ */
+
+/**
  * Parses the sql string into an intermediate form
  * @param {string} sql 
+ * @returns {ParsedSelectExpression}
  */
 module.exports = function lexparser(sql){
     const tokens = lexer(sql);
@@ -10,7 +42,10 @@ module.exports = function lexparser(sql){
     return parsed;
 }
 
-/** @param {string} sql */
+/**
+ * @param {string} sql
+ * @returns {string[]}
+ * */
 function lexer(sql){
     sql = sql.trim();
 
@@ -62,7 +97,10 @@ function lexer(sql){
     return tokens;
 }
 
-/** @param {string[]} tokens */
+/**
+ * @param {string[]} tokens
+ * @returns {ParsedSelectExpression}
+ * */
 function parser(tokens){
     if(tokens.length < 1)
         throw new Error('Invalid query');
@@ -181,6 +219,7 @@ const POSSIBLE_KEYWORDS_AFTER_FROM_TABLE_NAME = new Set([
  * @param {string[]} tokens
  * @param {number} query_start
  * @param {number} query_end
+ * @returns {_ParsedSelectExpression}
 */
 function parseSelect(tokens, query_start, query_end){
     let columns = [];
