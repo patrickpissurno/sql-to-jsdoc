@@ -2,6 +2,7 @@
  * @typedef ColumnSchema
  * @property {string} name
  * @property {string} type
+ * @property {boolean} unique
  */
 
 /**
@@ -78,14 +79,18 @@ module.exports = async function tableSchemaFetcher(pg, expression){
     
     {
         const { rows } = await pg.query(`
-            SELECT attrelid::regclass AS table_name, attname AS column_name, atttypid::regtype AS column_type
+            WITH t1 AS (
+                SELECT DISTINCT ix.indrelid, unnest(ix.indkey) AS indkey FROM pg_index ix
+                WHERE (ix.indisprimary = TRUE OR (ix.indisunique = TRUE AND ix.indisvalid = TRUE))
+            )
+            SELECT attrelid::regclass AS table_name, attname AS column_name, atttypid::regtype AS column_type, ((attrelid, attnum) IN (SELECT * FROM t1)) AS is_unique
             FROM   pg_attribute
             WHERE  attrelid IN (${tables.map(x => `'public.${x.name}'::regclass`).join(',')}) AND attnum > 0 AND NOT attisdropped
             ORDER  BY attnum;
         `);
 
         for(let row of rows){
-            tables_index.get(row.table_name).columns.push({ name: row.column_name, type: row.column_type });
+            tables_index.get(row.table_name).columns.push({ name: row.column_name, type: row.column_type, unique: row.is_unique });
         }
     }
     
