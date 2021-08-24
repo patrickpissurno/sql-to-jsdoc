@@ -4,6 +4,7 @@ const fs = require('fs');
 const lexparser = require('./lexparser');
 const htgen = require('./htgen');
 const tsfetch = require('./tsfetch');
+const wildcardExpander = require('./wildcard');
 
 const types = require('pg').types;
 types.setTypeParser(1003, v => {
@@ -28,10 +29,13 @@ async function main(){
         const exp = lexparser(query);
 
         const schemas = await tsfetch(pg, exp);
-        console.log(JSON.stringify(schemas,' ', 2));
+        // console.log(JSON.stringify(schemas,' ', 2));
 
         const ht = htgen(exp, schemas);
         console.log(JSON.stringify(ht));
+
+        const exp2 = wildcardExpander(exp, schemas);
+        console.log(exp2);
 
         return;
 
