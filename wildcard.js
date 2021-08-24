@@ -12,14 +12,19 @@ module.exports = function wildcardExpander(expression, schemas){
     /** @type {Map<string,string>} */
     const aliases = new Map();
 
+    /** @type {Set<string>} */
+    const all_tables = new Set();
+
     for(let t of expression.from){
         if(t.length > 1)
             aliases.set(t[1], t[0]);
+        all_tables.add(t[t.length - 1]);
     }
 
     for(let j of expression.joins){
         if(j.table.length > 1)
             aliases.set(j.table[1], j.table[0]);
+        all_tables.add(j.table[j.table.length - 1]);
     }
 
     const columns = [];
@@ -34,8 +39,13 @@ module.exports = function wildcardExpander(expression, schemas){
                 for(let c of smap.get(table).columns)
                     columns.push([`${arr[0]}.${c.name}`]);
             }
-            else
-                throw new Error('Not implemented'); //TODO: handle unprefixed wildcards
+            else {
+                for(let t of all_tables){
+                    const table = aliases.has(t) ? aliases.get(t) : t;
+                    for(let c of smap.get(table).columns)
+                        columns.push([`${t}.${c.name}`]);
+                }
+            }
         }
         else
             columns.push(col);
