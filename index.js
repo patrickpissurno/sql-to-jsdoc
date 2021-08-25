@@ -6,6 +6,7 @@ const htgen = require('./htgen');
 const tsfetch = require('./tsfetch');
 const wildcardExpander = require('./wildcard');
 const columnTracker = require('./tracker');
+const typeInferrer = require('./tinferrer');
 
 const types = require('pg').types;
 types.setTypeParser(1003, v => {
@@ -40,6 +41,9 @@ async function main(){
 
         const column_tables = columnTracker(exp2, schemas);
         console.log(column_tables);
+
+        const types = await typeInferrer(query, pg);
+        console.log(types);
         return;
 
         // const query = fs.readFileSync('./query.sql').toString();
