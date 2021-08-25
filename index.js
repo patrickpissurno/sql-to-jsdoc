@@ -5,6 +5,7 @@ const lexparser = require('./lexparser');
 const htgen = require('./htgen');
 const tsfetch = require('./tsfetch');
 const wildcardExpander = require('./wildcard');
+const columnTracker = require('./tracker');
 
 const types = require('pg').types;
 types.setTypeParser(1003, v => {
@@ -37,6 +38,8 @@ async function main(){
         const exp2 = wildcardExpander(exp, schemas);
         console.log(exp2);
 
+        const column_tables = columnTracker(exp2, schemas);
+        console.log(column_tables);
         return;
 
         // const query = fs.readFileSync('./query.sql').toString();
