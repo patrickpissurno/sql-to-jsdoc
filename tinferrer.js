@@ -1,8 +1,15 @@
 const { v4: uuid } = require('uuid');
 
+/** 
+ * @typedef ColumnType
+ * @property {string} name
+ * @property {string} type
+ */
+
 /**
  * @param {string} sql 
  * @param {import('pg').Client} pg
+ * @returns {ColumnType[]}
  */
 module.exports = async function typeInferrer(sql, pg){
     try {
@@ -17,20 +24,9 @@ module.exports = async function typeInferrer(sql, pg){
             ORDER BY attnum
         `);
 
-        return rows.map(x => new ColumnType(x.column_name, x.column_type));
+        return rows.map(x => ({ name: x.column_name, type: x.column_type }));
     }
     finally {
         await pg.query('ROLLBACK');
-    }
-}
-
-class ColumnType {
-    /**
-     * @param {string} name 
-     * @param {string} type 
-     */
-    constructor(name, type){
-        this.name = name;
-        this.type = type;
     }
 }

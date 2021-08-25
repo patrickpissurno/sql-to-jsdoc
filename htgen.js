@@ -1,6 +1,13 @@
 /**
+ * @typedef HierarchicalTree
+ * @property {string[]} nodes
+ * @property {HierarchicalTree[]} children
+ */
+
+/**
  * @param {import('./lexparser').ParsedSelectExpression} expression 
  * @param {import('./tsfetch').TableSchema[]} schemas 
+ * @returns {HierarchicalTree}
  */
 module.exports = function hierarchicalTreeGenerator(expression, schemas){
     /** @type {Map<string, import('./tsfetch').TableSchema>} */
