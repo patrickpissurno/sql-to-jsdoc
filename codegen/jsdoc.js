@@ -41,6 +41,10 @@ function computeProps(ir){
                 const _props = computeProps(ir[key][0]);
                 props.push(`${escapeKey(key)}: { ${_props.join(', ')} }[]`);
             }
+            else if(typeof(ir[key][0]) === 'string'){
+                const type = TYPE_CONVERTER[ir[key][0]] ?? 'any';
+                props.push(`${escapeKey(key)}: ${type}[]`);
+            }
             else
                 throw new Error('not implemented');
         }

@@ -35,7 +35,7 @@ async function main(){
         console.log(ir);
 
         const ir2 = transformer(ir, mapping);
-        console.log(ir2);
+        console.log(JSON.stringify(ir2, ' ', 2));
 
         const output = codegen(ir2);
         console.log(output);

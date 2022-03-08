@@ -8,7 +8,8 @@
 /**
  * @typedef ChildTransformationMapping
  * @property {string} rename
- * @property {boolean} [single]
+ * @property {boolean} [single] cannot be true when flat is true
+ * @property {boolean} [flat] cannot be true when single is true
  */
 
 /**
@@ -64,7 +65,16 @@ function applyTransform(result, ir, mapping){
 
     for(let child of (m.children ?? [])){
         const r = {};
-        result[child.rename] = child.single ? r : [r];
         applyTransform(r, ir, child);
+
+        if(child.flat){
+            for(let key in r){
+                result[child.rename] = [r[key]];
+                break;
+            }
+        }
+        else {
+            result[child.rename] = child.single ? r : [r];
+        }
     }
 }
