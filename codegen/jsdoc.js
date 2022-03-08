@@ -1,4 +1,11 @@
-/** @type {import('../builtin-types')} */
+/**
+ * @type {import('../builtin-types')}
+ * This definition was built based on the `pg-types` source-code,
+ * https://github.com/brianc/node-pg-types/blob/e018c0502fdc165ad9616cacc597f91884e0f183/lib/textParsers.js
+ * https://github.com/brianc/node-pg-types/blob/master/lib/binaryParsers.js
+ * It's meant to work with version 4.0.0 of that library, and may or may not work with future versions
+ * without change
+ */
 const TYPE_CONVERTER = {
     'BOOL': 'boolean',
     'BYTEA': 'Buffer',
@@ -19,7 +26,7 @@ const TYPE_CONVERTER = {
     'POLYGON': '',
     'CIDR': 'string',
     'FLOAT4': 'number',
-    'FLOAT8': 'string',
+    'FLOAT8': 'number',
     'CIRCLE': '{ x: number, y: number, radius: number }',
     'MACADDR8': '',
     'MONEY': 'string',
@@ -57,7 +64,61 @@ const TYPE_CONVERTER = {
     'JSONPATH': 'string',
     'REGNAMESPACE': '',
     'REGROLE': '',
-    'PG_MCV_LIST': ''
+    'PG_MCV_LIST': '',
+    '_BOOL': 'boolean[]',
+    '_BYTEA': 'Buffer[]',
+    '_CHAR': 'string',
+    '_INT8': 'string[]',
+    '_INT2': 'number[]',
+    '_INT4': 'number[]',
+    '_REGPROC': 'string[]',
+    '_TEXT': 'string[]',
+    '_OID': 'number[]',
+    '_TID': '',
+    '_XID': '',
+    '_CID': '',
+    '_JSON': 'object[]',
+    '_XML': '',
+    '_PATH': '',
+    '_POLYGON': '',
+    '_CIDR': 'string[]',
+    '_FLOAT4': 'number[]',
+    '_FLOAT8': 'string[]',
+    '_CIRCLE': '',
+    '_MACADDR8': '',
+    '_MONEY': 'string[]',
+    '_MACADDR': 'string[]',
+    '_INET': 'string[]',
+    '_ACLITEM': '',
+    '_BPCHAR': 'string[]',
+    '_VARCHAR': 'string[]',
+    '_DATE': 'string[]',
+    '_TIME': 'string[]',
+    '_TIMESTAMP': 'Date[]',
+    '_TIMESTAMPTZ': 'Date[]',
+    '_INTERVAL': `import('postgres-interval').IPostgresInterval[]`,
+    '_TIMETZ': 'string[]',
+    '_BIT': '',
+    '_VARBIT': '',
+    '_NUMERIC': 'string[]',
+    '_REFCURSOR': '',
+    '_REGPROCEDURE': '',
+    '_REGOPER': '',
+    '_REGOPERATOR': '',
+    '_REGCLASS': '',
+    '_REGTYPE': '',
+    '_UUID': 'string[]',
+    '_TXID_SNAPSHOT': '',
+    '_PG_LSN': '',
+    '_TSVECTOR': '',
+    '_TSQUERY': '',
+    '_GTSVECTOR': '',
+    '_REGCONFIG': '',
+    '_REGDICTIONARY': '',
+    '_JSONB': 'object[]',
+    '_JSONPATH': '',
+    '_REGNAMESPACE': '',
+    '_REGROLE': ''
 };
 
 /**
