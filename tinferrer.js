@@ -18,10 +18,11 @@ module.exports = async function typeInferrer(sql, pg){
         await pg.query(`CREATE TEMP TABLE ${tmp_table} AS (${sql})`);
 
         const { rows } = await pg.query(`
-            SELECT attrelid::regclass AS table_name, attname AS column_name, atttypid::regtype AS column_type
-            FROM pg_attribute
-            WHERE attrelid = '${tmp_table}'::regclass AND attnum > 0 AND NOT attisdropped
-            ORDER BY attnum
+            SELECT a.attrelid::regclass AS table_name, a.attname AS column_name, UPPER(pt.typname) AS column_type
+            FROM pg_attribute a
+            JOIN pg_type pt ON (a.atttypid = pt.oid)
+            WHERE a.attrelid = '${tmp_table}'::regclass AND a.attnum > 0 AND NOT a.attisdropped
+            ORDER BY a.attnum
         `);
 
         return rows.map(x => ({ name: x.column_name, type: x.column_type }));
