@@ -33,9 +33,20 @@ function computeProps(ir){
             const type = TYPE_CONVERTER[ir[key]] ?? 'any';
             props.push(`${escapeKey(key)}: ${type}`);
         }
+        else if(Array.isArray(ir[key])){
+            if(ir[key].length !== 1){
+                throw new Error('not implemented');
+            }
+            else if(typeof(ir[key][0]) === 'object'){
+                const _props = computeProps(ir[key][0]);
+                props.push(`${escapeKey(key)}: { ${_props.join(', ')} }[]`);
+            }
+            else
+                throw new Error('not implemented');
+        }
         else if(typeof(ir[key]) === 'object'){
             const _props = computeProps(ir[key]);
-            props.push(`${escapeKey(key)}: { ${_props.join(', ')} }[]`);
+            props.push(`${escapeKey(key)}: { ${_props.join(', ')} }`);
         }
         else
             throw new Error('not implemented');
