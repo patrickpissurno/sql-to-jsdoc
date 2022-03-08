@@ -78,4 +78,5 @@ typings/
 env_vars
 output/
 
-query.sql
+/query.sql
+/mapping.json

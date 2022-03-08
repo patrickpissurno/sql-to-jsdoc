@@ -26,6 +26,7 @@ async function main(){
     await pg.connect();
     try {
         const query = fs.readFileSync('./query.sql').toString();
+        const mapping = JSON.parse(fs.readFileSync('./mapping.json').toString());
 
         const columns = await typeInferrer(query, pg);
         console.log(columns);
@@ -33,11 +34,11 @@ async function main(){
         const ir = irgen(columns);
         console.log(ir);
 
-        // const ir2 = transformer(ir);
-        // console.log(ir2);
+        const ir2 = transformer(ir, mapping);
+        console.log(ir2);
 
-        const output = codegen(ir);
-        console.log(output);
+        // const output = codegen(ir2);
+        // console.log(output);
     }
     finally {
         await pg.end();
