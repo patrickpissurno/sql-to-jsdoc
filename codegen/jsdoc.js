@@ -16,6 +16,16 @@ const TYPE_CONVERTER = {
  * @returns {string}
  */
 module.exports = function jsdoc(ir){
+    const props = computeProps(ir);
+
+    return `/** @type {{ rows: { ${props.join(', ')} }[] }} */`;
+}
+
+/**
+ * @param {object} ir intermediary representation
+ * @returns {string[]}
+ */
+function computeProps(ir){
     const props = [];
 
     for(let key in ir){
@@ -23,11 +33,15 @@ module.exports = function jsdoc(ir){
             const type = TYPE_CONVERTER[ir[key]] ?? 'any';
             props.push(`${escapeKey(key)}: ${type}`);
         }
+        else if(typeof(ir[key]) === 'object'){
+            const _props = computeProps(ir[key]);
+            props.push(`${escapeKey(key)}: { ${_props.join(', ')} }[]`);
+        }
         else
             throw new Error('not implemented');
     }
 
-    return `/** @type {{ rows: { ${props.join(', ')} }[] }} */`;
+    return props;
 }
 
 /**

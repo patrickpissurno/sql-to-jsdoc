@@ -37,8 +37,8 @@ async function main(){
         const ir2 = transformer(ir, mapping);
         console.log(ir2);
 
-        // const output = codegen(ir2);
-        // console.log(output);
+        const output = codegen(ir2);
+        console.log(output);
     }
     finally {
         await pg.end();
