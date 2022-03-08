@@ -27,7 +27,7 @@
 function getColumnOut(column){
     if(typeof(column) === 'string')
         return column;
-    return column[1];
+    return column[1] ?? null;
 }
 
 /**
@@ -53,10 +53,13 @@ module.exports = function structureTransformer(ir, mapping){
 function applyTransform(result, ir, mapping){
     const m = mapping;
 
-    result[getColumnOut(m.key)] = ir[getColumnIn(m.key)];
+    if(getColumnOut(m.key) != null)
+        result[getColumnOut(m.key)] = ir[getColumnIn(m.key)];
 
-    for(let col of (m.columns ?? []))
-        result[getColumnOut(col)] = ir[getColumnIn(col)];
+    for(let col of (m.columns ?? [])){
+        if(getColumnOut(col) != null)
+            result[getColumnOut(col)] = ir[getColumnIn(col)];
+    }
 
     for(let child of (m.children ?? [])){
         result[child.rename] = {};
