@@ -29,13 +29,13 @@ async function main(){
         const mapping = JSON.parse(fs.readFileSync('./mapping.json').toString());
 
         const columns = await typeInferrer(query, pg);
-        console.log(columns);
+        console.log(columns, '\n');
 
         const ir = irgen(columns);
-        console.log(ir);
+        console.log(ir, '\n');
 
         const ir2 = transformer(ir, mapping);
-        console.log(JSON.stringify(ir2, ' ', 2));
+        console.log(JSON.stringify(ir2, ' ', 2), '\n');
 
         const output = codegen(ir2);
         console.log(output);
