@@ -1,4 +1,3 @@
-const { Client } = require('pg');
 const config = require('./config');
 const fs = require('fs');
 const typeInferrer = require('./tinferrer');
@@ -6,41 +5,40 @@ const irgen = require('./irgen');
 const transformer = require('./transformer');
 const codegen = require('./codegen/jsdoc');
 
-const types = require('pg').types;
-types.setTypeParser(1003, v => {
-    v = v.substring(1, v.length - 1).split(',').map(x => x === 'NULL' ? null : x);
-    return v.length === 1 && v[0] === null ? null : v;
-});
+class CustomError extends Error {}
 
-const pg = new Client({
-    host: config.DB_HOST,
-    database: config.DB_NAME,
-    user: config.DB_USER,
-    password: config.DB_PASS,
-    port: config.DB_PORT,
-});
+/** @param {string[]} args */
+async function main(args){
+    if(args.length < 1 || args.length > 2)
+        throw new CustomError('Invalid arguments. Usage:\nnode index.js <query.sql> [mapping.json]');
 
-main();
+    const query = fs.readFileSync(args[0]).toString();
+    const mapping = args.length > 1 ? JSON.parse(fs.readFileSync(args[1]).toString()) : null;
 
-async function main(){
-    await pg.connect();
-    try {
-        const query = fs.readFileSync('./query.sql').toString();
-        const mapping = JSON.parse(fs.readFileSync('./mapping.json').toString());
+    const columns = await typeInferrer(query, {
+        DB_HOST: config.DB_HOST,
+        DB_NAME: config.DB_NAME,
+        DB_USER: config.DB_USER,
+        DB_PASS: config.DB_PASS,
+        DB_PORT: config.DB_PORT,
+    });
+    // console.log(columns, '\n');
 
-        const columns = await typeInferrer(query, pg);
-        console.log(columns, '\n');
+    const ir = irgen(columns);
+    // console.log(ir, '\n');
 
-        const ir = irgen(columns);
-        console.log(ir, '\n');
+    const ir2 = transformer(ir, mapping);
+    // console.log(JSON.stringify(ir2, ' ', 2), '\n');
 
-        const ir2 = transformer(ir, mapping);
-        console.log(JSON.stringify(ir2, ' ', 2), '\n');
-
-        const output = codegen(ir2);
-        console.log(output);
-    }
-    finally {
-        await pg.end();
-    }
+    const output = codegen(ir2);
+    console.log(output);
 }
+
+main(Array.from(process.argv).splice(2))
+    .catch(err => {
+        console.error(err instanceof CustomError ? err.message : err);
+        process.exit(1);
+    })
+    .then(() => {
+        process.exit(0);
+    });

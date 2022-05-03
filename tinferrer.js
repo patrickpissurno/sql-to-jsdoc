@@ -1,3 +1,4 @@
+const { Client } = require('pg');
 const { v4: uuid } = require('uuid');
 
 /** 
@@ -6,12 +7,36 @@ const { v4: uuid } = require('uuid');
  * @property {string} type
  */
 
+/** 
+ * @typedef Credentials
+ * @property {string} DB_HOST
+ * @property {string} DB_NAME
+ * @property {string} DB_USER
+ * @property {string} DB_PASS
+ * @property {string} DB_PORT
+ */
+
+require('pg').types.setTypeParser(1003, v => {
+    v = v.substring(1, v.length - 1).split(',').map(x => x === 'NULL' ? null : x);
+    return v.length === 1 && v[0] === null ? null : v;
+});
+
 /**
  * @param {string} sql 
- * @param {import('pg').Client} pg
+ * @param {Credentials} credentials
  * @returns {ColumnType[]}
  */
-module.exports = async function typeInferrer(sql, pg){
+module.exports = async function typeInferrer(sql, credentials){
+    const pg = new Client({
+        host: credentials.DB_HOST,
+        database: credentials.DB_NAME,
+        user: credentials.DB_USER,
+        password: credentials.DB_PASS,
+        port: credentials.DB_PORT,
+    });
+
+    await pg.connect();
+
     try {
         const tmp_table = 'tmp_' + uuid().replace(/-/g, '_');
         await pg.query('BEGIN');
@@ -29,5 +54,6 @@ module.exports = async function typeInferrer(sql, pg){
     }
     finally {
         await pg.query('ROLLBACK');
+        await pg.end();
     }
 }
