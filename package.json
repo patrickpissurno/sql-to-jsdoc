@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "description": "Generate JSDoc annotations from raw SQL queries",
+  "keywords": ["sql", "raw", "jsdoc", "postgresql", "code-generation"],
   "bin": {
     "sql-to-jsdoc": "index.js",
     "sql2jsdoc": "index.js"
