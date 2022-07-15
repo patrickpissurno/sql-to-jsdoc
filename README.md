@@ -6,42 +6,44 @@
 
 Generate JSDoc annotations from raw SQL queries
 
-### Install
+## Install
 
 `npm i -g sql-to-jsdoc`
 
-### Usage
+## Usage
 
 You'll need to have the following environment variables set:
-- `DB_NAME`
-- `DB_HOST`
-- `DB_PORT`
-- `DB_USER`
-- `DB_PASS`
+- `DB_NAME` (database name)
+- `DB_HOST` (database hostname)
+- `DB_PORT` (database port)
+- `DB_USER` (database username)
+- `DB_PASS` (database password)
 
 Then run:
 
 ```
 sql-to-jsdoc query.sql
+```
 
-or
+Or:
 
+```
 sql-to-jsdoc query.sql transform.json
 ```
 
-Replacing query.sql for the name of a file containing the query, and
-transform.json for the name of a file containing the optional transformation.
+Replacing *query.sql* for the name of a file containing the query, and
+*transform.json* for the name of a file containing the optional transformation.
 
 You can check out some pretty good docs about the transformations [here](https://github.com/patrickpissurno/sqlutils/blob/master/docs/transformer.md).
 
-### Considerations
+## Considerations
 
 At the moment this tool only supports PostgreSQL databases. The generated
 JSDoc annotations are meant to be used with [node-postgres](https://github.com/brianc/node-postgres).
 
 I'll be revisiting this page soon to add more information and improve the documentation.
 
-### License
+## License
 
 MIT License
 
