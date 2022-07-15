@@ -1,20 +1,24 @@
 {
-  "name": "sql-query-mapper",
+  "name": "sql-to-jsdoc",
   "version": "1.0.0",
   "main": "index.js",
-  "private": true,
-  "scripts": {},
+  "description": "Generate JSDoc annotations from raw SQL queries",
+  "bin": {
+    "sql-to-jsdoc": "index.js",
+    "sql2jsdoc": "index.js"
+  },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/patrickpissurno/sql-query-mapper.git"
+    "url": "git+https://github.com/patrickpissurno/sql-to-jsdoc.git"
   },
   "author": "Patrick Pissurno",
   "bugs": {
-    "url": "https://github.com/patrickpissurno/sql-query-mapper/issues"
+    "url": "https://github.com/patrickpissurno/sql-to-jsdoc/issues"
   },
-  "homepage": "https://github.com/patrickpissurno/sql-query-mapper#readme",
+  "homepage": "https://github.com/patrickpissurno/sql-to-jsdoc#readme",
   "dependencies": {
     "pg": "^8.7.1",
     "uuid": "^8.3.2"
-  }
+  },
+  "license": "MIT"
 }

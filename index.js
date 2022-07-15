@@ -1,3 +1,5 @@
+#! /usr/bin/env node
+
 const config = require('./config');
 const fs = require('fs');
 const typeInferrer = require('./tinferrer');
@@ -22,13 +24,10 @@ async function main(args){
         DB_PASS: config.DB_PASS,
         DB_PORT: config.DB_PORT,
     });
-    // console.log(columns, '\n');
 
     const ir = irgen(columns);
-    // console.log(ir, '\n');
 
     const ir2 = transformer(ir, mapping);
-    // console.log(JSON.stringify(ir2, ' ', 2), '\n');
 
     const output = codegen(ir2);
     console.log(output);

@@ -3,8 +3,8 @@
  * This definition was built based on the `pg-types` source-code,
  * https://github.com/brianc/node-pg-types/blob/e018c0502fdc165ad9616cacc597f91884e0f183/lib/textParsers.js
  * https://github.com/brianc/node-pg-types/blob/master/lib/binaryParsers.js
- * It's meant to work with version 4.0.0 of that library, and may or may not work with future versions
- * without change
+ * It's meant to work with version 4.0.0 of that library, and may or may not
+ * work properly with future versions without change
  */
 const TYPE_CONVERTER = {
     'BOOL': 'boolean',

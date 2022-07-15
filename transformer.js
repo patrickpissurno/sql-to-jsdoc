@@ -1,12 +1,12 @@
 /**
- * @typedef TransformationMapping
+ * @typedef Transformation
  * @property {string|[string,string]} key
  * @property {(string|[string,string])[]} [columns]
- * @property {(TransformationMapping & ChildTransformationMapping)[]} [children]
+ * @property {(Transformation & ChildTransformation)[]} [children]
  */
 
 /**
- * @typedef ChildTransformationMapping
+ * @typedef ChildTransformation
  * @property {string} rename
  * @property {boolean} [single] cannot be true when flat is true
  * @property {boolean} [flat] cannot be true when single is true
@@ -34,7 +34,7 @@ function getColumnOut(column){
 
 /**
  * @param {object} ir intermediary representation
- * @param {TransformationMapping} mapping transformation mapping
+ * @param {Transformation} mapping transformation mapping
  * @returns {any} intermediary representation
  */
 module.exports = function structureTransformer(ir, mapping){
@@ -50,7 +50,7 @@ module.exports = function structureTransformer(ir, mapping){
 /**
  * @param {any} result transformed intermediary representation
  * @param {object} ir original intermediary representation
- * @param {TransformationMapping} mapping transformation mapping
+ * @param {Transformation} mapping transformation mapping
  */
 function applyTransform(result, ir, mapping){
     const m = mapping;
