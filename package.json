@@ -1,6 +1,6 @@
 {
   "name": "sql-to-jsdoc",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "main": "index.js",
   "description": "Generate JSDoc annotations from raw SQL queries",
   "keywords": [
