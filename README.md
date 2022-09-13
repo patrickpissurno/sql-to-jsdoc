@@ -1,7 +1,7 @@
 # sql-to-jsdoc
 [![npm-version](https://img.shields.io/npm/v/sql-to-jsdoc.svg)](https://www.npmjs.com/package/sql-to-jsdoc)
 [![known vulnerabilities](https://snyk.io/test/github/patrickpissurno/sql-to-jsdoc/badge.svg)](https://snyk.io/test/github/patrickpissurno/sql-to-jsdoc)
-[![downloads](https://img.shields.io/npm/dt/sql-to-jsdoc.svg)](http://npm-stats.com/~packages/sql-to-jsdoc)
+[![downloads](https://img.shields.io/npm/dt/sql-to-jsdoc.svg)](https://www.npmjs.com/package/sql-to-jsdoc)
 [![license](https://img.shields.io/github/license/patrickpissurno/sql-to-jsdoc.svg?maxAge=1800)](https://github.com/patrickpissurno/sql-to-jsdoc/blob/master/LICENSE)
 
 Generate JSDoc annotations from raw SQL queries
